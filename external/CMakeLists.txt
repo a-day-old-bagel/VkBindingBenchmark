@@ -1,20 +1,32 @@
 
 # Build the external libs that need building
 
-# SDL_VULKAN
-#add_subdirectory( ./sdl_vulkan )
+# SDL2
 find_package( SDL2 REQUIRED )
-find_package( Vulkan REQUIRED )
-include_directories( SYSTEM
+list( APPEND vkbb_external_includes
   ${SDL2_INCLUDE_DIR}
-  ${Vulkan_INCLUDE_DIR}
-  )
-
-# ASSIMP
-find_package( Assimp REQUIRED )
-include_directories(
-  ${assimp_INCLUDE_DIRS}
 )
+
+# Vulkan
+find_package( Vulkan REQUIRED )
+list( APPEND vkbb_external_includes
+  ${Vulkan_INCLUDE_DIR}
+)
+
+# XCB (if present)
+find_package( X11_XCB )
+if ( X11_XCB_FOUND )
+  set( XCB_LIBS ${X11_XCB_LIBRARIES} )
+  list( APPEND vkbb_external_includes
+    ${X11_XCB_INCLUDE_DIRS}
+  )
+endif ()
+
+## ASSIMP
+#find_package( Assimp REQUIRED )
+#list( APPEND vkbb_external_includes
+#  ${assimp_INCLUDE_DIRS}
+#)
 
 # SPIRV_CROSS
 option( SPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS "Instead of throwing exceptions assert" ON )
@@ -36,7 +48,7 @@ add_subdirectory( ./realtimeutils )
 
 add_library( vkbb_external INTERFACE )
 
-set( vkbb_dirs_to_include
+target_include_directories( vkbb_external INTERFACE
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/assimp
   ${CMAKE_CURRENT_SOURCE_DIR}/assimp/include
@@ -50,29 +62,21 @@ set( vkbb_dirs_to_include
   ${CMAKE_CURRENT_SOURCE_DIR}/rapidjson/internal
   ${CMAKE_CURRENT_SOURCE_DIR}/stb
   ${CMAKE_CURRENT_SOURCE_DIR}/glm
-  )
-if ( WIN32 )
-  set( vkbb_dirs_to_include "${vkbb_dirs_to_include} rapidjson/msinttypes" )
-endif ( WIN32 )
 
-target_include_directories( vkbb_external INTERFACE
-  ${vkbb_dirs_to_include}
-  )
+  SYSTEM
 
-find_package( X11_XCB )
-if ( X11_XCB_FOUND )
-  set( X_LIBS ${X11_XCB_LIBRARIES} )
-  include_directories( SYSTEM ${X11_XCB_INCLUDE_DIRS} )
-endif ()
+  ${vkbb_external_includes}
+)
 
 target_link_libraries( vkbb_external INTERFACE
-  #  SDL_vulkan
   ${SDL2_LIBRARY}
   #  SDL2 SDL2main
   ${Vulkan_LIBRARY}
-  ${X_LIBS}
-  ${assimp_LIBRARIES}
+  ${XCB_LIBS}
+#  ${assimp_LIBRARIES}
   assimp
   spirv-cross-glsl
   realtimeutils
   )
+
+message( STATUS "SDL2 INCLUDE DIR: ${SDL2_INCLUDE_DIR}" )

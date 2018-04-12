@@ -1,7 +1,7 @@
 #pragma once
-//#include "os_init_old.h"
-#include <stdint.h>
-#include <SDL2/SDL_timer.h>
+
+#include <cstdint>
+#include <SDL_timer.h>
 #define FPS_DATA_FRAME_HISTORY_SIZE 1024
 
 struct TimeSpan

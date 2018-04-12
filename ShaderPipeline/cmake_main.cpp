@@ -94,6 +94,8 @@ int main(int argc, const char** argv) {
   std::string shaderInPath = cmdl[1];
   std::string reflOutPath = cmdl[2];
 
+  printf("Compiling reflections: \n\tSPV dir is %s, \n\tREFL dir is %s\n", shaderInPath.c_str(), reflOutPath.c_str());
+
   makeDirectoryRecursive(makeFullPath(reflOutPath));
 
   std::vector<std::string> inputFiles = getFilesInDirectory(shaderInPath);
@@ -111,6 +113,8 @@ int main(int argc, const char** argv) {
       std::string reflPath = spvPath;
       findReplace(reflPath, std::string(".spv"), std::string(".refl"));
 
+      printf("\tReflecting spv: %s\n", spvPath.c_str());
+      fflush(stdout);
       FILE* shaderFile = fopen(spvPath.c_str(), "rb");
 			assert(shaderFile);
 

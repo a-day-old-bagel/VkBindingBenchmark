@@ -1,9 +1,8 @@
 
 #pragma once
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_hints.h>
-#include <SDL2/SDL_log.h>
+#include <SDL.h>
+#include <SDL_hints.h>
 #include <string>
 #include <realtimeutils/topics.hpp>
 #include <realtimeutils/keyInput.hpp>

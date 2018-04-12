@@ -1,4 +1,3 @@
-#include <utility>
 #include "Common.h"
 #include "mesh_loading.h"
 #include "rendering.h"
