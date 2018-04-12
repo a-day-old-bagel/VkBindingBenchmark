@@ -2,7 +2,11 @@
 #include "vkh.h"
 #include "config.h"
 #include <deque>
+
+#define GLM_FORCE_RADIANS
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
+
 #include "shader_inputs.h"
 
 namespace ubo_store
@@ -44,7 +48,7 @@ namespace ubo_store
 	std::vector<UBOPage> pages;
 
 	void init(vkh::VkhContext& _ctxt)
-	{		
+	{
 		ctxt = &_ctxt;
 
 		size_t uboAlignment = _ctxt.gpu.deviceProps.limits.minUniformBufferOffsetAlignment;
@@ -142,7 +146,7 @@ namespace ubo_store
 		{
 			p = &createNewPage();
 		}
-		
+
 		uint32_t slot = p->freeIndices.front();
 		p->freeIndices.pop_front();
 
@@ -174,7 +178,7 @@ namespace ubo_store
 
 			for (uint32_t i = 0; i < countPerPage; ++i)
 			{
-#if DYNAMIC_UBO				
+#if DYNAMIC_UBO
 				VShaderInput slotInput = { projMatrix * viewMatrix, glm::transpose(glm::inverse(viewMatrix)) };
 				memcpy(&mapCharPtr[i * slotSize], &slotInput, sizeof(VShaderInput));
 #else
@@ -206,7 +210,7 @@ namespace ubo_store
 		#if DEVICE_LOCAL
 			for (uint32_t p = 0; p < pages.size(); ++p)
 			{
-				#if PERSISTENT_STAGING_BUFFER	
+				#if PERSISTENT_STAGING_BUFFER
 					vkh::copyBuffer(pages[p].stagingBuf, pages[p].buf, size, 0, 0, commandBuffer, ctxt);
 				#else
 					vkh::copyDataToBuffer(&pages[p].buf, size, 0, (char*)pages[p].map, ctxt);

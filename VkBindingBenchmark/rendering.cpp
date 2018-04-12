@@ -3,7 +3,7 @@
 
 #include "config.h"
 #include "rendering.h"
-#include "os_init.h"
+//#include "os_init_old.h"
 #include "vkh_material.h"
 #include "config.h"
 #include <glm/gtx/transform.hpp>
@@ -94,7 +94,7 @@ void loadUBOTestMaterial(int num)
 	createInfo.descSetLayouts.push_back(appMaterial.descSetLayout);
 
 #if WITH_COMPLEX_SHADER
-	vkh::createBasicMaterial(VERT_SHADER_NAME, "..\\data\\_generated\\builtshaders\\random_frag.frag.spv", *appData.owningContext, createInfo);
+	vkh::createBasicMaterial(VERT_SHADER_NAME, "./shaders/random_frag.frag.spv", *appData.owningContext, createInfo);
 #else
 	vkh::createBasicMaterial(VERT_SHADER_NAME, "..\\data\\_generated\\builtshaders\\debug_normals.frag.spv", *appData.owningContext, createInfo);
 #endif
@@ -137,7 +137,7 @@ void loadDebugMaterial()
 	createInfo.pushConstantRange = sizeof(glm::mat4)*2;
 
 #if WITH_COMPLEX_SHADER
-	vkh::createBasicMaterial("..\\data\\_generated\\builtshaders\\common_vert.vert.spv", "..\\data\\_generated\\builtshaders\\random_frag.frag.spv", *appData.owningContext, createInfo);
+	vkh::createBasicMaterial("./shaders/common_vert.vert.spv", "./shaders/random_frag.frag.spv", *appData.owningContext, createInfo);
 #else
 	vkh::createBasicMaterial("..\\data\\_generated\\builtshaders\\common_vert.vert.spv", "..\\data\\_generated\\builtshaders\\debug_normals.frag.spv", *appData.owningContext, createInfo);
 #endif
@@ -148,11 +148,11 @@ void createDepthBuffer()
 {
 	vkh::VkhContext& ctxt = *appData.owningContext;
 
-	vkh::createImage(appData.depthBuffer.handle, 
-					ctxt.swapChain.extent.width, 
-					ctxt.swapChain.extent.height, 
-					VK_FORMAT_D32_SFLOAT, 
-					VK_IMAGE_TILING_OPTIMAL, 
+	vkh::createImage(appData.depthBuffer.handle,
+					ctxt.swapChain.extent.width,
+					ctxt.swapChain.extent.height,
+					VK_FORMAT_D32_SFLOAT,
+					VK_IMAGE_TILING_OPTIMAL,
 					VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
 					*appData.owningContext);
 
@@ -215,14 +215,14 @@ void render(Camera::Cam& cam, const std::vector<vkh::MeshAsset>& drawCalls, cons
 		0.0f, 0.0f, 0.5f, 1.0f);
 
 	static float rads = 0.001f;
-	glm::mat4 proj = vulkanCorrection * p;	
+	glm::mat4 proj = vulkanCorrection * p;
 	vkh::VkhContext& appContext = *appData.owningContext;
 
 #if !COPY_ON_MAIN_COMMANDBUFFER
 	data_store::updateBuffers(view, proj, nullptr, appContext);
 #endif
 
-	VkResult res;	
+	VkResult res;
 
 	//acquire an image from the swap chain
 	uint32_t imageIndex;
@@ -286,7 +286,7 @@ void render(Camera::Cam& cam, const std::vector<vkh::MeshAsset>& drawCalls, cons
 			(void*)&uboSlot);
 
 #elif PUSH_TEST
-		
+
 		//0 is MVP, 1 is normal
 		glm::mat4 frameData[2];
 

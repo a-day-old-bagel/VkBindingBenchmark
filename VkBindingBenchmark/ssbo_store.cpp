@@ -1,5 +1,9 @@
 #include "ssbo_store.h"
+
+#define GLM_FORCE_RADIANS
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
+
 #include <deque>
 #include "shader_inputs.h"
 #include "config.h"
@@ -34,9 +38,9 @@ namespace ssbo_store
 #endif
 
 		vkh::createBuffer(
-			buf, 
-			alloc, 
-			sizeof(VShaderInput) * num, 
+			buf,
+			alloc,
+			sizeof(VShaderInput) * num,
 #if DEVICE_LOCAL
 			VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -90,7 +94,7 @@ namespace ssbo_store
 		freeIndices.pop_front();
 
 		//we may have to page this at some point, reserve
-		//3 bits for page id. 
+		//3 bits for page id.
 		outIdx = outIdx << 3;
 
 		return true;
@@ -136,17 +140,17 @@ namespace ssbo_store
 
 
 		#if PERSISTENT_STAGING_BUFFER || !DEVICE_LOCAL
-				vkFlushMappedMemoryRanges(ctxt.device, 1, &range);	
+				vkFlushMappedMemoryRanges(ctxt.device, 1, &range);
 		#endif
 
 		#if DEVICE_LOCAL
-			#if PERSISTENT_STAGING_BUFFER		
+			#if PERSISTENT_STAGING_BUFFER
 				vkh::copyBuffer(stagingBuffer, buf, range.size, 0, 0, commandBuffer, ctxt);
-			#else		
-				vkh::copyDataToBuffer(&buf, range.size, 0, (char*)map, ctxt);	
-			#endif	
+			#else
+				vkh::copyDataToBuffer(&buf, range.size, 0, (char*)map, ctxt);
+			#endif
 		#endif
-		
+
 	}
 
 	VkDescriptorType getDescriptorType()

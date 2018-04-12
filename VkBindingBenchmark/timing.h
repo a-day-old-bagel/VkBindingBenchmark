@@ -1,6 +1,7 @@
 #pragma once
-#include "os_init.h"
+//#include "os_init_old.h"
 #include <stdint.h>
+#include <SDL2/SDL_timer.h>
 #define FPS_DATA_FRAME_HISTORY_SIZE 1024
 
 struct TimeSpan
@@ -25,13 +26,16 @@ struct FPSData
 
 void startTiming(TimeSpan& span)
 {
-	span.start = OS::getMilliseconds();
-	span.end = OS::getMilliseconds();
+//	span.start = OS::getMilliseconds();
+//	span.end = OS::getMilliseconds();
+  span.start = SDL_GetTicks();
+  span.end = SDL_GetTicks();
 }
 
 double endTiming(TimeSpan& span)
 {
-	span.end = OS::getMilliseconds();
+//	span.end = OS::getMilliseconds();
+	span.end = SDL_GetTicks();
 	return span.end - span.start;
 }
 

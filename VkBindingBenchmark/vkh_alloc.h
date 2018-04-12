@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <cstdlib>
 #include "vkh.h"
 #include "vkh_types.h"
 
@@ -17,7 +18,7 @@ namespace vkh::allocators::passthrough
 
 	AllocatorState state;
 
-	//ALLOCATOR INTERFACE / INSTALLATION 
+	//ALLOCATOR INTERFACE / INSTALLATION
 	void activate(VkhContext* context);
 	void alloc(Allocation& outAlloc, AllocationCreateInfo createInfo);
 	void free(Allocation& handle);
@@ -113,7 +114,7 @@ namespace vkh::allocators::pool
 
 	AllocatorState state;
 
-	//ALLOCATOR INTERFACE / INSTALLATION 
+	//ALLOCATOR INTERFACE / INSTALLATION
 	void activate(VkhContext* context);
 	void alloc(Allocation& outAlloc, AllocationCreateInfo createInfo);
 	void free(Allocation& handle);

@@ -1,6 +1,7 @@
 #pragma once
 
 #define VK_USE_PLATFORM_WIN32_KHR
+#include <SDL2/SDL_vulkan.h>
 #include <vulkan/vulkan.h>
 #include <vulkan/vk_sdk_platform.h>
 #include <vector>
@@ -100,6 +101,7 @@ namespace vkh
 
 	struct VkhContext
 	{
+		SDL_Window* window;
 		VkInstance				instance;
 		VkhSurface				surface;
 		VkhPhysicalDevice		gpu;

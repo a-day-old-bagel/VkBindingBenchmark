@@ -1,6 +1,6 @@
 #pragma once
 
-#define VK_USE_PLATFORM_WIN32_KHR
+//#define VK_USE_PLATFORM_WIN32_KHR
 #include <vulkan/vulkan.h>
 #include <vulkan/vk_sdk_platform.h>
 #include <vector>
@@ -25,7 +25,7 @@ namespace vkh
 	VkhCommandBuffer beginScratchCommandBuffer(ECommandPoolType type, VkhContext& ctxt);
 	void submitScratchCommandBuffer(VkhCommandBuffer& commandBuffer);
 
-	//todo: do we really need three of these? 
+	//todo: do we really need three of these?
 	void copyBuffer(VkBuffer& srcBuffer, VkBuffer& dstBuffer, VkDeviceSize size, uint32_t srcOffset, uint32_t dstOffset, VkhCommandBuffer& buffer);
 	void copyBuffer(VkBuffer& srcBuffer, VkBuffer& dstBuffer, VkDeviceSize size, uint32_t srcOffset, uint32_t dstOffset, VkCommandBuffer& buffer);
 	void copyBuffer(VkBuffer& srcBuffer, VkBuffer& dstBuffer, VkDeviceSize size, uint32_t srcOffset, uint32_t dstOffset, VkCommandBuffer* buffer, VkhContext& ctxt);

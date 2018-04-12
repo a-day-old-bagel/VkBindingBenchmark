@@ -1,5 +1,5 @@
 #pragma once
-#include <glm\glm.hpp>
+#include <glm/glm.hpp>
 
 //for UBO / SSBO testing, we'll use transform data
 struct VShaderInput

@@ -1,0 +1,12 @@
+[submodule "external/spirv-cross"]
+	path = external/spirv-cross
+	url = https://github.com/khronosgroup/spirv-cross
+[submodule "external/glslang"]
+	path = external/glslang
+	url = https://github.com/khronosgroup/glslang
+[submodule "external/glm"]
+	path = external/glm
+	url = https://github.com/g-truc/glm
+[submodule "external/realtimeutils"]
+	path = external/realtimeutils
+	url = https://github.com/a-day-old-bagel/realtimeutils

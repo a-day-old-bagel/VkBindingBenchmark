@@ -25,8 +25,8 @@
 
 #if UBO_TEST
 	#define data_store ubo_store
-	#if DYNAMIC_UBO	
-		#define VERT_SHADER_NAME "..\\data\\_generated\\builtshaders\\dynamic_ubo.vert.spv"
+	#if DYNAMIC_UBO
+		#define VERT_SHADER_NAME "./shaders/dynamic_ubo.vert.spv"
 	#else
 		#define VERT_SHADER_NAME "..\\data\\_generated\\builtshaders\\ubo_array.vert.spv"
 	#endif
@@ -62,7 +62,7 @@ SSBO_TEST	|		3.08	|			  |		0.89	 |		1.56	  |		2.53		|
 PUSH_TEST   |		0.74    |			  |				 |		0.70	  |		0.73		|
 
 Interior+Exterior
-			| (No Modifier) 	| DYNAMIC_UBO | DEVICE_LOCAL | COMBINE_MESHES | SHUFFLE_MESHES	|  
+			| (No Modifier) 	| DYNAMIC_UBO | DEVICE_LOCAL | COMBINE_MESHES | SHUFFLE_MESHES	|
 UBO_TEST	|		5.9			|	5.9		  |		15.41	 |		2.07	  |			6.46	|
 SSBO_TEST	|		42.23		|			  |		8.38	 |		7.82	  |			41.92	|
 PUSH_TEST   |		9.37		|			  |				 |		1.66	  |			10.30	|
@@ -76,7 +76,7 @@ Using Open hardware monitor, wait for CPU cores to be below 65 C
 
 Numbers are an average of 4096 frames, not using the first 1024 frames of the application
 
-SHUFFLE_MESHES is ALWAYS ON 
+SHUFFLE_MESHES is ALWAYS ON
 COMBINE MESHES IS ALWAYS OFF
 
 Sponza -> SSBO set to 511 -> 394 meshes
@@ -85,8 +85,8 @@ UBO_TEST	|		0.83	|		0.78  |		1.61	 |  0.96
 SSBO_TEST	|		2.57	|			  |		0.89	 |
 PUSH_TEST   |		0.77    |			  |				 |
 -------------
-			| Persistent staging    |   BOTH 
-UBO_TEST	|		0.95			|	0.79	
+			| Persistent staging    |   BOTH
+UBO_TEST	|		0.95			|	0.79
 DYNAMIC_UBO	|		0.95			|	0.80
 SSBO_TEST	|		0.89			|	0.79
 ------------
@@ -107,5 +107,5 @@ SSBO_TEST	|		7.43			|	6.69
 
 Notes: UBO_STORE set to 256 per page, when non dynamic, saw no real gains switching this to 511 (was the same as the BOTH test with 256)
 
-Note: Persistent staging buffer without being on the main buffer is faster if it isn't host visible, on the mian buffer, it's faster host visible, wtf? 
+Note: Persistent staging buffer without being on the main buffer is faster if it isn't host visible, on the mian buffer, it's faster host visible, wtf?
 */

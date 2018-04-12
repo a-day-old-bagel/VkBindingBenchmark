@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 
-void splitString(std::string& str, std::vector<std::string>& splitTarget, std::string delim)
+void splitString(const std::string &str, std::vector<std::string>& splitTarget, const std::string &delim)
 {
 	size_t last = 0;
 	size_t next = 0;
@@ -11,12 +11,12 @@ void splitString(std::string& str, std::vector<std::string>& splitTarget, std::s
 	{
 		splitTarget.push_back(str.substr(last, next - last));
 		last = next + 1;
-	} 
-	
+	}
+
 	splitTarget.push_back(str.substr(last));
 }
 
-void findReplace(std::string& line, std::string& oldString, std::string& newString) 
+void findReplace(std::string& line, const std::string& oldString, const std::string& newString)
 {
 	using std::string;
 

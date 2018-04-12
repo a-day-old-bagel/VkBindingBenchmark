@@ -2,7 +2,7 @@
 #include "vkh.h"
 #include <stdint.h>
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb\stb_image.h>
+#include <stb/stb_image.h>
 
 namespace vkh
 {
@@ -41,7 +41,7 @@ namespace vkh::Texture
 			stagingBufferMemory,
 			imageSize,
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			ctxt);
 
 		void* data;

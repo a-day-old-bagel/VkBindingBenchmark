@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
 #include <string>
-#include <rapidjson\prettywriter.h>
-#include <rapidjson\stringbuffer.h>
+#include <rapidjson/prettywriter.h>
+#include <rapidjson/stringbuffer.h>
 
 struct BlockMember
 {
@@ -53,7 +53,7 @@ void writeInputGroup(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, s
 {
 	writer.Key(inputGroupName.c_str());
 	writer.StartArray();
-	
+
 	for (InputBlock& block : descSet)
 	{
 		writer.StartObject();
