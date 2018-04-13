@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+#include <sstream>
 #include "vkh_types.h"
 #include "vkh.h"
 #include "vkh_alloc.h"
@@ -16,17 +17,37 @@ namespace vkh {
 
   VkDebugReportCallbackEXT callback;
 
-  static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+  VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
       VkDebugReportFlagsEXT flags,
       VkDebugReportObjectTypeEXT objType,
-      uint64_t obj,
+      uint64_t sourceObject,
       size_t location,
-      int32_t code,
-      const char *layerPrefix,
-      const char *msg,
-      void *userData) {
-    printf("[VALIDATION LAYER] %s \n", msg);
-    return VK_FALSE;
+      int32_t messageCode,
+      const char* layerPrefix,
+      const char* message,
+      void* userData) {
+    std::ostringstream out;
+    out <<   "VULKAN SAYS ";
+    if (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) {
+      out << "[ ERROR ]   ";
+    }
+    if (flags & VK_DEBUG_REPORT_WARNING_BIT_EXT) {
+      out << "[ WARNING ] ";
+    }
+    if (flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT) {
+      out << "[ INFO ]    ";
+    }
+    if (flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT) {
+      out << "[ PERFORM ] ";
+    }
+    if (flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT) {
+      out << "[ DEBUG ]   ";
+    }
+    out << "(" << layerPrefix << ", " << messageCode << "): " << message << std::endl;
+    printf("%s", out.str().c_str());
+    fflush(stdout);
+
+    return (VkBool32) false;
   }
 
   void createInstance(VkhContext &ctxt, const char *appName) {
@@ -50,7 +71,7 @@ namespace vkh {
     const char *layerNames = "VK_LAYER_LUNARG_standard_validation";
 
     validationLayers.push_back(layerNames);
-    printf("Looking for: %s\n", layerNames);
+    printf("\t* Looking for: %s\n", layerNames);
 
     layersAvailable.push_back(false);
 
@@ -64,7 +85,7 @@ namespace vkh {
     for (uint32_t i = 0; i < validationLayers.size(); ++i) {
       for (uint32_t j = 0; j < availableLayers.size(); ++j) {
         if (strcmp(validationLayers[i], availableLayers[j].layerName) == 0) {
-          printf("Found layer: %s\n", validationLayers[i]);
+          printf("\t* Found layer: %s\n", validationLayers[i]);
           layersAvailable[i] = true;
         }
       }
@@ -91,8 +112,8 @@ namespace vkh {
 
     const char **sdlVkExtensions = nullptr;
     uint32_t sdlVkExtensionCount = 0;
-    VkResult result;
 
+    // Query the extensions requested by SDL_vulkan
     bool success = SDL_Vulkan_GetInstanceExtensions(ctxt.window, &sdlVkExtensionCount, NULL);
     checkf(success, "SDL_Vulkan_GetInstanceExtensions(): %s\n", SDL_GetError());
 
@@ -102,41 +123,33 @@ namespace vkh {
     success = SDL_Vulkan_GetInstanceExtensions(ctxt.window, &sdlVkExtensionCount, sdlVkExtensions);
     checkf(success, "SDL_Vulkan_GetInstanceExtensions(): %s\n", SDL_GetError());
 
-    printf("SDL_vulkan requires the following extensions:\n");
+    // require the extensions requested by SDL_vulkan
     for (uint32_t i = 0; i < sdlVkExtensionCount; ++i) {
-      printf("\t%s\n", sdlVkExtensions[i]);
       requiredExtensions.push_back(sdlVkExtensions[i]);
       extensionsPresent.push_back(false);
     }
     SDL_free((void*)sdlVkExtensions);
 
-//    requiredExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-//    extensionsPresent.push_back(false);
-//
-//    requiredExtensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
-//    extensionsPresent.push_back(false);
-
-#if _DEBUG
+#if _DEBUG // TODO: Migrate to using debug_utils extension instead of deprecated debug_report
+    // require the debug extensions
     requiredExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+//    requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     extensionsPresent.push_back(false);
 #endif
 
 
-    printf("Available Vulkan Extensions: \n");
+    printf("Available Vulkan extensions (*) and enabled extensions (=>): \n");
 
     for (uint32_t i = 0; i < extensions.size(); ++i) {
       auto &prop = extensions[i];
-      printf("* %s ", prop.extensionName);
       bool found = false;
       for (uint32_t i = 0; i < requiredExtensions.size(); i++) {
         if (strcmp(prop.extensionName, requiredExtensions[i]) == 0) {
-          printf(" - Enabled\n");
           found = true;
           extensionsPresent[i] = true;
         }
       }
-
-      if (!found) printf("\n");
+      printf("\t%s %s\n", found ? "=>" : "* ", prop.extensionName);
     }
 
     bool allExtensionsFound = true;
@@ -172,17 +185,6 @@ namespace vkh {
 
 
   }
-
-//  void createWin32Surface(VkhContext &ctxt, HINSTANCE win32Instance, HWND wndHdl) {
-//    VkWin32SurfaceCreateInfoKHR createInfo;
-//    createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-//    createInfo.hwnd = wndHdl;
-//    createInfo.hinstance = win32Instance;
-//    createInfo.pNext = NULL;
-//    createInfo.flags = 0;
-//    VkResult res = vkCreateWin32SurfaceKHR(ctxt.instance, &createInfo, nullptr, &ctxt.surface.surface);
-//    checkf(res == VK_SUCCESS, "Error creating win32 vulkan surface");
-//  }
 
   void createSurface(VkhContext &ctxt) {
     bool success = SDL_Vulkan_CreateSurface(ctxt.window, ctxt.instance, &ctxt.surface.surface);
@@ -586,7 +588,6 @@ namespace vkh {
     createInstance(ctxt, appName);
     createDebugCallback(ctxt);
 
-//    createWin32Surface(ctxt, Instance, wndHdl);
     createSurface(ctxt);
     createPhysicalDevice(ctxt);
     createLogicalDevice(ctxt);

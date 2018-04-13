@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+#include <cstdint>
 #include "vkh.h"
 #include "vkh_mesh.h"
 

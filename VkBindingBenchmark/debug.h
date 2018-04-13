@@ -1,7 +1,5 @@
 #pragma once
 
-//#include <cstdint>
-
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 #define VKBB_FANCY_WIN32_DEBUG
 #endif

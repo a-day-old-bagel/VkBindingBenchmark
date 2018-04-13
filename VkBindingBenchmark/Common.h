@@ -1,8 +1,5 @@
 #pragma once
 
-//#include <cstdint>
-//#include "rapidjson/msinttypes/inttypes.h
-//#include "rapidjson/msinttypes/stdint.h
 #include <utility>
 #include "vkh.h"
 #include "vkh_types.h"
@@ -10,8 +7,6 @@
 #include "vkh_setup.h"
 #include "vkh_alloc.h"
 #include "debug.h"
-//#include "os_init_old.h"
-//#include "os_input_old.h"
 #include "timing.h"
 #include "vkh_mesh.h"
 #include "vkh_texture.h"

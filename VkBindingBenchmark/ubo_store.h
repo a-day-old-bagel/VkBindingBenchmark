@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+#include <cstdint>
 
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>

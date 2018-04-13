@@ -1,17 +1,10 @@
 
-# This section decides whether to use the new C++17 <experimental/filesystem> library to deal with files
-# and directories instead of the previous Windows-only code. This can be overridden from the command line or gui.
 if ( MSVC )
-  option( VKBB_USE_CPP17_FILESYSTEM "Use the <experimental/filesystem> library" OFF )
+  # No flags to add to MSVC at this time
 else ( MSVC )
-  option( VKBB_USE_CPP17_FILESYSTEM "Use the <experimental/filesystem> library" ON )
-  if ( VKBB_USE_CPP17_FILESYSTEM )
-    set( vkbb_shader_pipeline_extra_linker_flags stdc++fs )
-  endif ( VKBB_USE_CPP17_FILESYSTEM )
+  # This is so that <experimental/filesystem> will link in linux.
+  set( vkbb_shader_pipeline_extra_linker_flags stdc++fs )
 endif ( MSVC )
-if ( VKBB_USE_CPP17_FILESYSTEM )
-  add_definitions( -DVKBB_USE_CPP17_FILESYSTEM )
-endif ( VKBB_USE_CPP17_FILESYSTEM )
 
 # These paths are used when compiling the shaders to SPIR-V and generating reflection files.
 # Use -D options when building with CMake to specify non-default values, or use the GUI.

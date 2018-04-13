@@ -57,6 +57,6 @@ namespace vkh
 		VkShaderStageFlagBits pushConstantStages;
 	};
 
-	void initGlobalShaderData();
+	void initGlobalShaderData(VkhContext& ctxt);
 	void createBasicMaterial(const char* vShaderPath, const char* fShaderPath, VkhContext& ctxt, VkhMaterialCreateInfo& createInfo);
 }

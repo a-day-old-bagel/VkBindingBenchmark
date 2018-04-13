@@ -2,11 +2,10 @@
 #include <argh.h>
 #include <string>
 #include <vector>
-#include <stdint.h>
+#include <cstdint>
 #include "filesystem_utils.h"
 #include "string_utils.h"
 #include "shaderdata.h"
-#include "config.h"
 #include <cstdio>
 #include <codecvt>
 

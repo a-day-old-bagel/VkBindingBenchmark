@@ -22,11 +22,28 @@ if ( X11_XCB_FOUND )
   )
 endif ()
 
-## ASSIMP
-#find_package( Assimp REQUIRED )
-#list( APPEND vkbb_external_includes
-#  ${assimp_INCLUDE_DIRS}
-#)
+option( BUILD_SHARED_LIBS "Build package with shared libraries." OFF )
+option( BUILD_FRAMEWORK "Build package as Mac OS X Framework bundle." OFF )
+option( ASSIMP_DOUBLE_PRECISION "Set to ON to enable double precision processing" OFF )
+option( ASSIMP_OPT_BUILD_PACKAGES "Set to ON to generate CPack configuration files and packaging targets" OFF )
+option( ASSIMP_ANDROID_JNIIOSYSTEM "Android JNI IOSystem support is active" OFF )
+option( ASSIMP_NO_EXPORT "Disable Assimp's export functionality." ON )
+option( ASSIMP_BUILD_ZLIB "Build your own zlib" OFF )
+option( ASSIMP_BUILD_ASSIMP_TOOLS "If the supplementary tools for Assimp are built in addition to the library." OFF )
+option( ASSIMP_BUILD_SAMPLES "If the official samples are built as well (needs Glut)." OFF )
+option( ASSIMP_BUILD_TESTS "If the test suite for Assimp is built in addition to the library." OFF )
+option( ASSIMP_COVERALLS "Enable this to measure test coverage." OFF )
+option( ASSIMP_WERROR "Treat warnings as errors." OFF )
+option( ASSIMP_ASAN "Enable AddressSanitizer." OFF )
+option( ASSIMP_UBSAN "Enable Undefined Behavior sanitizer." OFF )
+option( SYSTEM_IRRXML "Use system installed Irrlicht/IrrXML library." OFF )
+option( BUILD_DOCS "Build documentation using Doxygen." OFF )
+option( ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT "default value of all ASSIMP_BUILD_XXX_IMPORTER value" FALSE )
+option( ASSIMP_BUILD_OBJ_IMPORTER "build obj importer" TRUE )
+add_subdirectory( assimp )
+list( APPEND vkbb_external_includes
+  ${CMAKE_BINARY_DIR}/external/assimp/include
+)
 
 # SPIRV_CROSS
 option( SPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS "Instead of throwing exceptions assert" ON )
@@ -48,35 +65,23 @@ add_subdirectory( ./realtimeutils )
 
 add_library( vkbb_external INTERFACE )
 
-target_include_directories( vkbb_external INTERFACE
+target_include_directories( vkbb_external INTERFACE SYSTEM
   ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/assimp
   ${CMAKE_CURRENT_SOURCE_DIR}/assimp/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/assimp/include/assimp
-  ${CMAKE_CURRENT_SOURCE_DIR}/assimp/include/assimp/Compiler
-  ${CMAKE_CURRENT_SOURCE_DIR}/assimp/include/assimp/port
-  ${CMAKE_CURRENT_SOURCE_DIR}/assimp/include/assimp/port/AndroidJNI
   ${CMAKE_CURRENT_SOURCE_DIR}/argh
   ${CMAKE_CURRENT_SOURCE_DIR}/rapidjson
-  ${CMAKE_CURRENT_SOURCE_DIR}/rapidjson/error
-  ${CMAKE_CURRENT_SOURCE_DIR}/rapidjson/internal
   ${CMAKE_CURRENT_SOURCE_DIR}/stb
   ${CMAKE_CURRENT_SOURCE_DIR}/glm
-
-  SYSTEM
-
   ${vkbb_external_includes}
 )
 
 target_link_libraries( vkbb_external INTERFACE
   ${SDL2_LIBRARY}
-  #  SDL2 SDL2main
   ${Vulkan_LIBRARY}
   ${XCB_LIBS}
-#  ${assimp_LIBRARIES}
   assimp
   spirv-cross-glsl
   realtimeutils
-  )
+)
 
 message( STATUS "SDL2 INCLUDE DIR: ${SDL2_INCLUDE_DIR}" )

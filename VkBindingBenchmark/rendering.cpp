@@ -96,7 +96,7 @@ void loadUBOTestMaterial(int num)
 #if WITH_COMPLEX_SHADER
 	vkh::createBasicMaterial(VERT_SHADER_NAME, "./shaders/random_frag.frag.spv", *appData.owningContext, createInfo);
 #else
-	vkh::createBasicMaterial(VERT_SHADER_NAME, "..\\data\\_generated\\builtshaders\\debug_normals.frag.spv", *appData.owningContext, createInfo);
+	vkh::createBasicMaterial(VERT_SHADER_NAME, "./shaders/debug_normals.frag.spv", *appData.owningContext, createInfo);
 #endif
 
 	//allocate a descriptor set for each ubo transform array
@@ -139,7 +139,7 @@ void loadDebugMaterial()
 #if WITH_COMPLEX_SHADER
 	vkh::createBasicMaterial("./shaders/common_vert.vert.spv", "./shaders/random_frag.frag.spv", *appData.owningContext, createInfo);
 #else
-	vkh::createBasicMaterial("..\\data\\_generated\\builtshaders\\common_vert.vert.spv", "..\\data\\_generated\\builtshaders\\debug_normals.frag.spv", *appData.owningContext, createInfo);
+	vkh::createBasicMaterial("./shaders/common_vert.vert.spv", "./shaders/debug_normals.frag.spv", *appData.owningContext, createInfo);
 #endif
 }
 
@@ -205,6 +205,7 @@ void createMainRenderPass(vkh::VkhContext& ctxt)
 void render(Camera::Cam& cam, const std::vector<vkh::MeshAsset>& drawCalls, const std::vector<uint32_t>& uboIdx)
 {
 	const glm::mat4 view = Camera::viewMatrix(cam);
+
 	glm::mat4 p = glm::perspectiveRH(glm::radians(60.0f), SCREEN_W / (float)SCREEN_H, 0.05f, 3000.0f);
 	//from https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
 	//this flips the y coordinate back to positive == up, and readjusts depth range to match opengl

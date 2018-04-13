@@ -9,8 +9,6 @@ add_executable( vkbb_binding_benchmark
   material_loading.h
   mesh_loading.cpp mesh_loading.h
   null_store.cpp null_store.h
-#  os_init_old.cpp os_init_old.h
-#  os_input_old.h
   rendering.cpp rendering.h
   shader_inputs.h
   ssbo_store.cpp ssbo_store.h

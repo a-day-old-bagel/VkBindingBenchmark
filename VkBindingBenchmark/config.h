@@ -1,7 +1,7 @@
 #pragma once
 
-#define SCREEN_W 1280
-#define SCREEN_H 720
+#define SCREEN_W 1920
+#define SCREEN_H 1080
 
 //Test Categories
 #define UBO_TEST 1
@@ -9,8 +9,8 @@
 #define PUSH_TEST 0
 
 //What mesh to test
-#define BISTRO_TEST 1
-#define SPONZA_TEST 0
+#define BISTRO_TEST 0
+#define SPONZA_TEST 1
 
 //Test Modifiers
 #define DYNAMIC_UBO 1
@@ -21,22 +21,22 @@
 #define COMBINE_MESHES 0
 #define SHUFFLE_MESHES 1
 
-#define WITH_COMPLEX_SHADER 1
+#define WITH_COMPLEX_SHADER 0
 
 #if UBO_TEST
 	#define data_store ubo_store
 	#if DYNAMIC_UBO
 		#define VERT_SHADER_NAME "./shaders/dynamic_ubo.vert.spv"
 	#else
-		#define VERT_SHADER_NAME "..\\data\\_generated\\builtshaders\\ubo_array.vert.spv"
+		#define VERT_SHADER_NAME "./shaders/ubo_array.vert.spv"
 	#endif
 	#include "ubo_store.h"
 #elif SSBO_TEST
 	#define data_store ssbo_store
 	#if BISTRO_TEST
-		#define VERT_SHADER_NAME "..\\data\\_generated\\builtshaders\\ssbo_array.vert.spv"
+		#define VERT_SHADER_NAME "./shaders/ssbo_array.vert.spv"
 	#else
-		#define VERT_SHADER_NAME "..\\data\\_generated\\builtshaders\\ssbo_array_511.vert.spv"
+		#define VERT_SHADER_NAME "./shaders/ssbo_array_511.vert.spv"
 	#endif
 	#include "ssbo_store.h"
 #else
