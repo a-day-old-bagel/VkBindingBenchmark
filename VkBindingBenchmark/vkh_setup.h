@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <sstream>
+#include <algorithm>
 #include "vkh_types.h"
 #include "vkh.h"
 #include "vkh_alloc.h"
@@ -9,8 +10,8 @@
 
 namespace vkh {
   struct VkhContextCreateInfo {
-    std::vector<VkDescriptorType> types;
-    std::vector<uint32_t> typeCounts;
+      std::vector<VkDescriptorType> types;
+      std::vector<uint32_t> typeCounts;
   };
 
   const uint32_t INVALID_QUEUE_FAMILY_IDX = -1;
@@ -23,11 +24,11 @@ namespace vkh {
       uint64_t sourceObject,
       size_t location,
       int32_t messageCode,
-      const char* layerPrefix,
-      const char* message,
-      void* userData) {
+      const char *layerPrefix,
+      const char *message,
+      void *userData) {
     std::ostringstream out;
-    out <<   "VULKAN SAYS ";
+    out << "VULKAN SAYS ";
     if (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) {
       out << "[ ERROR ]   ";
     }
@@ -117,7 +118,7 @@ namespace vkh {
     bool success = SDL_Vulkan_GetInstanceExtensions(ctxt.window, &sdlVkExtensionCount, NULL);
     checkf(success, "SDL_Vulkan_GetInstanceExtensions(): %s\n", SDL_GetError());
 
-    sdlVkExtensions = (const char **)SDL_malloc(sizeof(const char *) * sdlVkExtensionCount);
+    sdlVkExtensions = (const char **) SDL_malloc(sizeof(const char *) * sdlVkExtensionCount);
     checkf(sdlVkExtensions, "Out of memory.\n");
 
     success = SDL_Vulkan_GetInstanceExtensions(ctxt.window, &sdlVkExtensionCount, sdlVkExtensions);
@@ -128,7 +129,7 @@ namespace vkh {
       requiredExtensions.push_back(sdlVkExtensions[i]);
       extensionsPresent.push_back(false);
     }
-    SDL_free((void*)sdlVkExtensions);
+    SDL_free((void *) sdlVkExtensions);
 
 #if _DEBUG // TODO: Migrate to using debug_utils extension instead of deprecated debug_report
     // require the debug extensions
@@ -202,8 +203,8 @@ namespace vkh {
     createInfo.pfnCallback = debugCallback;
 
     PFN_vkCreateDebugReportCallbackEXT CreateDebugReportCallback = VK_NULL_HANDLE;
-    CreateDebugReportCallback = (PFN_vkCreateDebugReportCallbackEXT) vkGetInstanceProcAddr(ctxt.instance,
-                                                                                           "vkCreateDebugReportCallbackEXT");
+    CreateDebugReportCallback = (PFN_vkCreateDebugReportCallbackEXT)
+        vkGetInstanceProcAddr(ctxt.instance, "vkCreateDebugReportCallbackEXT");
     CreateDebugReportCallback(ctxt.instance, &createInfo, NULL, &callback);
 #endif
   }
@@ -451,6 +452,23 @@ namespace vkh {
 
   }
 
+  VkExtent2D chooseSwapExtent(const VkhContext &ctxt) {
+    VkSurfaceCapabilitiesKHR capabilities = ctxt.gpu.swapChainSupport.capabilities;
+    if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
+      return capabilities.currentExtent;
+    } else {
+      VkExtent2D actualExtent = {
+          static_cast<uint32_t>(ctxt.windowWidth),
+          static_cast<uint32_t>(ctxt.windowHeight)
+      };
+      actualExtent.width = std::max(capabilities.minImageExtent.width,
+                                    std::min(capabilities.maxImageExtent.width, actualExtent.width));
+      actualExtent.height = std::max(capabilities.minImageExtent.height,
+                                     std::min(capabilities.maxImageExtent.height, actualExtent.height));
+      return actualExtent;
+    }
+  }
+
   void createSwapchainForSurface(VkhContext &ctxt) {
     //choose the surface format to use
     VkSurfaceFormatKHR desiredFormat;
@@ -507,7 +525,7 @@ namespace vkh {
                                               &physDevice.swapChainSupport.capabilities);
 
     //swap extent is the resolution of the swapchain
-    swapExtent = physDevice.swapChainSupport.capabilities.currentExtent;
+    swapExtent = chooseSwapExtent(ctxt);
 
     //need 1 more than minimum image count for triple buffering
     uint32_t imageCount = physDevice.swapChainSupport.capabilities.minImageCount + 1;
@@ -583,7 +601,10 @@ namespace vkh {
 
   void initContext(VkhContextCreateInfo &info, const char *appName, VkhContext &ctxt) {
     sdl::WindowCreateInfo sdlWindowCreateInfo;
+    sdlWindowCreateInfo.width = ctxt.windowWidth;
+    sdlWindowCreateInfo.height = ctxt.windowHeight;
     ctxt.window = sdl::init(sdlWindowCreateInfo);
+    SDL_GetWindowSize(ctxt.window, &ctxt.windowWidth, &ctxt.windowHeight);
 
     createInstance(ctxt, appName);
     createDebugCallback(ctxt);

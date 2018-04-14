@@ -15,9 +15,9 @@ namespace sdl {
     std::string title = "Vulkan Binding Benchmark";
     int posX = SDL_WINDOWPOS_UNDEFINED;
     int posY = SDL_WINDOWPOS_UNDEFINED;
-    uint32_t width = SCREEN_W;
-    uint32_t height = SCREEN_H;
-    uint32_t flags = SDL_WINDOW_VULKAN; //| SDL_WINDOW_RESIZABLE;
+    int width = SCREEN_W;
+    int height = SCREEN_H;
+    uint32_t flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE;
     WindowCreateInfo() = default;
   };
 

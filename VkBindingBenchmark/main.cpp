@@ -17,6 +17,13 @@
 
 */
 
+class VkbbState;
+void logFPSAverage(double avg);
+void mainLoop(VkbbState &state);
+void cleanupSwapChain(VkbbState &state);
+void cleanup(VkbbState &state);
+void recreateSwapChain(VkbbState &state);
+
 class VkbbState {
 
     std::unique_ptr<rtu::topics::Subscription> quitSub, mouseMove, keyW, keyA, keyS, keyD;
@@ -25,7 +32,7 @@ class VkbbState {
 
   public:
 
-    vkh::VkhContext appContext;
+    vkh::VkhContext context;
     std::vector<vkh::MeshAsset> testMesh;
     std::vector<uint32_t> uboIdx;
     Camera::Cam worldCamera;
@@ -34,6 +41,10 @@ class VkbbState {
     float forwardBack = 0.f;
 
     VkbbState() {
+      context.windowWidth = SCREEN_W;
+      context.windowHeight = SCREEN_H;
+      context.resizeDlgt = RTU_MTHD_DLGT(&VkbbState::onWindowResize, this);
+
       quitSub = std::make_unique<rtu::topics::Subscription>("quit", RTU_MTHD_DLGT(&VkbbState::onQuit, this));
       mouseMove = std::make_unique<rtu::topics::Subscription>("mouse_moved", RTU_MTHD_DLGT(&VkbbState::onMouse, this));
       keyW = std::make_unique<rtu::topics::Subscription>("key_held_w", RTU_MTHD_DLGT(&VkbbState::onKeyW, this));
@@ -53,21 +64,31 @@ class VkbbState {
       ctxtInfo.typeCounts.push_back(512);
       ctxtInfo.typeCounts.push_back(512);
       ctxtInfo.typeCounts.push_back(1);
-      initContext(ctxtInfo, "Uniform Buffer Array Demo", appContext);
+      initContext(ctxtInfo, "Uniform Buffer Array Demo", context);
 
       Camera::init(worldCamera);
     }
 
     void onQuit() { running = false; }
-    void onMouse(void* eventPtr) {
-      auto event = (SDL_Event*) eventPtr;
-      Camera::rotate(worldCamera, glm::vec3(0.0f, 1.0f, 0.0f), (float)event->motion.xrel * -mouseSpeed);
-      Camera::rotate(worldCamera, Camera::localRight(worldCamera), (float)event->motion.yrel * -mouseSpeed);
+
+    void onMouse(void *eventPtr) {
+      auto event = (SDL_Event *) eventPtr;
+      Camera::rotate(worldCamera, glm::vec3(0.0f, 1.0f, 0.0f), (float) event->motion.xrel * -mouseSpeed);
+      Camera::rotate(worldCamera, Camera::localRight(worldCamera), (float) event->motion.yrel * -mouseSpeed);
     }
+
     void onKeyW() { forwardBack += 1.f; }
+
     void onKeyS() { forwardBack -= 1.f; }
+
     void onKeyA() { leftRight += 1.f; }
+
     void onKeyD() { leftRight -= 1.f; }
+
+    void onWindowResize() {
+      recreateSwapChain(*this);
+    }
+
     void tick(double dt) {
       glm::vec3 translation =
           (Camera::localForward(worldCamera) * forwardBack) + (Camera::localRight(worldCamera) * leftRight);
@@ -76,24 +97,6 @@ class VkbbState {
       leftRight = 0.f;
     }
 };
-
-
-void logFPSAverage(double avg) {
-  printf("AVG FRAMETIME FOR LAST %i FRAMES: %f ms\n", FPS_DATA_FRAME_HISTORY_SIZE, avg);
-}
-
-void mainLoop(VkbbState &state) {
-  FPSData fpsData = {0};
-  fpsData.logCallback = logFPSAverage;
-  startTimingFrame(fpsData);
-  while (state.running) {
-    double dt = endTimingFrame(fpsData);
-    startTimingFrame(fpsData);
-    sdl::pollEvents();
-    state.tick(dt);
-    render(state.worldCamera, state.testMesh, state.uboIdx);
-  }
-}
 
 int main(int argc, char **argv) {
 
@@ -111,14 +114,14 @@ int main(int argc, char **argv) {
   auto interior = loadMesh("./meshes/interior.obj", false, state.appContext);
   state.testMesh.insert(state.testMesh.end(), interior.begin(), interior.end());
 #else
-  state.testMesh = loadMesh("./meshes/sponza.obj", false, state.appContext);
+  state.testMesh = loadMesh("./meshes/sponza.obj", false, state.context);
 #endif
 
   state.uboIdx.resize(state.testMesh.size());
 
   printf("Num meshes: %lu\n", state.testMesh.size());
 
-  data_store::init(state.appContext);
+  data_store::init(state.context);
 
   for (uint32_t i = 0; i < state.testMesh.size(); ++i) {
     bool didAcquire = data_store::acquire(state.uboIdx[i]);
@@ -139,9 +142,100 @@ int main(int argc, char **argv) {
 
 #endif
 
-  initRendering(state.appContext, state.testMesh.size());
+  initRendering(state.context, state.testMesh.size());
 
   mainLoop(state);
 
   return 0;
 }
+
+void logFPSAverage(double avg) {
+  printf("AVG FRAMETIME FOR LAST %i FRAMES: %f ms\n", FPS_DATA_FRAME_HISTORY_SIZE, avg);
+}
+
+void mainLoop(VkbbState &state) {
+  FPSData fpsData = {0};
+  fpsData.logCallback = logFPSAverage;
+  startTimingFrame(fpsData);
+  while (state.running) {
+    double dt = endTimingFrame(fpsData);
+    startTimingFrame(fpsData);
+    sdl::pollEvents();
+    state.tick(dt);
+    render(state.context, state.worldCamera, state.testMesh, state.uboIdx);
+  }
+}
+
+void cleanupSwapChain(VkbbState &state) {
+  vkDestroyImageView(state.context.device, state.context.renderData.depthBuffer.view, nullptr);
+  vkDestroyImage(state.context.device, state.context.renderData.depthBuffer.handle, nullptr);
+  vkFreeMemory(state.context.device, state.context.renderData.depthBuffer.imageMemory.handle, nullptr);
+
+  for (size_t i = 0; i < state.context.renderData.frameBuffers.size(); i++) {
+    vkDestroyFramebuffer(state.context.device, state.context.renderData.frameBuffers[i], nullptr);
+  }
+
+  vkFreeCommandBuffers(state.context.device, state.context.gfxCommandPool,
+                       static_cast<uint32_t>(state.context.renderData.commandBuffers.size()),
+                       state.context.renderData.commandBuffers.data());
+
+  vkDestroyPipeline(state.context.device, state.context.matData.graphicsPipeline, nullptr);
+  vkDestroyPipelineLayout(state.context.device, state.context.matData.pipelineLayout, nullptr);
+  vkDestroyRenderPass(state.context.device, state.context.renderData.mainRenderPass, nullptr);
+
+  for (size_t i = 0; i < state.context.swapChain.imageViews.size(); i++) {
+    vkDestroyImageView(state.context.device, state.context.swapChain.imageViews[i], nullptr);
+  }
+
+  vkDestroySwapchainKHR(state.context.device, state.context.swapChain.swapChain, nullptr);
+}
+
+void recreateSwapChain(VkbbState &state) {
+  int width, height;
+  SDL_GetWindowSize(state.context.window, &width, &height);
+  if (width <= 0 || height <= 0) {
+    return;
+  }
+
+  state.context.windowWidth = width;
+  state.context.windowHeight = height;
+
+  vkDeviceWaitIdle(state.context.device);
+
+  cleanupSwapChain(state);
+
+  createSwapchainForSurface(state.context);
+  initRendering(state.context, state.testMesh.size());
+}
+
+//  void cleanup(VkbbState &state) {
+//    cleanupSwapChain(state);
+//
+//    vkDestroySampler(device, textureSampler, nullptr);
+//    vkDestroyImageView(device, textureImageView, nullptr);
+//
+//    vkDestroyImage(device, textureImage, nullptr);
+//    vkFreeMemory(device, textureImageMemory, nullptr);
+//
+//    vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+//
+//    vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
+//    vkDestroyBuffer(device, uniformBuffer, nullptr);
+//    vkFreeMemory(device, uniformBufferMemory, nullptr);
+//
+//    vkDestroyBuffer(device, indexBuffer, nullptr);
+//    vkFreeMemory(device, indexBufferMemory, nullptr);
+//
+//    vkDestroyBuffer(device, vertexBuffer, nullptr);
+//    vkFreeMemory(device, vertexBufferMemory, nullptr);
+//
+//    vkDestroySemaphore(device, renderFinishedSemaphore, nullptr);
+//    vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
+//
+//    vkDestroyCommandPool(device, commandPool, nullptr);
+//
+//    vkDestroyDevice(device, nullptr);
+//    DestroyDebugReportCallbackEXT(instance, callback, nullptr);
+//    vkDestroySurfaceKHR(instance, surface, nullptr);
+//    vkDestroyInstance(instance, nullptr);
+//  }
