@@ -207,7 +207,7 @@ void render(vkh::VkhContext &ctxt, Camera::Cam &cam, const std::vector<vkh::Mesh
             const std::vector<uint32_t> &uboIdx) {
   const glm::mat4 view = Camera::viewMatrix(cam);
 
-  glm::mat4 p = glm::perspectiveRH(glm::radians(60.0f), SCREEN_W / (float) SCREEN_H, 0.05f, 3000.0f);
+  glm::mat4 p = glm::perspectiveRH(glm::radians(60.0f), ctxt.windowWidth / (float) ctxt.windowHeight, 0.05f, 3000.0f);
   //from https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
   //this flips the y coordinate back to positive == up, and readjusts depth range to match opengl
   glm::mat4 vulkanCorrection = glm::mat4(
@@ -246,6 +246,7 @@ void render(vkh::VkhContext &ctxt, Camera::Cam &cam, const std::vector<vkh::Mesh
   beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
   beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
   beginInfo.pInheritanceInfo = nullptr; // Optional
+
   vkResetCommandBuffer(ctxt.renderData.commandBuffers[imageIndex], VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
   res = vkBeginCommandBuffer(ctxt.renderData.commandBuffers[imageIndex], &beginInfo);
 

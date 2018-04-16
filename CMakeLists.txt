@@ -15,10 +15,11 @@ add_subdirectory( external )
 # Manually add any extra flags for now to fix minor grievances - improve later.
 if ( MSVC )
   # This flag is because VS has to be told to use modern C++ in five different ways before it believes you.
+  # Also the leading whitespace should be illegal, but it is instead necessary given VS's implementation. Typical.
   list( APPEND vkbb_extra_compiler_flags " /std:c++latest" )
 else ( MSVC )
   # This is so that <experimental/filesystem> will link in linux.
-  list( APPEND vkbb_extra_linker_flags " stdc++fs" )
+  list( APPEND vkbb_extra_linker_flags stdc++fs )
 endif ( MSVC )
 list( APPEND CMAKE_CXX_FLAGS ${vkbb_extra_compiler_flags} )
 

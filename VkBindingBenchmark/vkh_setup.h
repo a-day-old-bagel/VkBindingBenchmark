@@ -28,25 +28,25 @@ namespace vkh {
       const char *message,
       void *userData) {
     std::ostringstream out;
-    out << "VULKAN SAYS ";
+    out << "VULKAN ";
     if (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) {
-      out << "[ ERROR ]   ";
+      out << "ERROR ";
     }
     if (flags & VK_DEBUG_REPORT_WARNING_BIT_EXT) {
-      out << "[ WARNING ] ";
+      out << "WARNING ";
     }
     if (flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT) {
-      out << "[ INFO ]    ";
+      out << "INFO ";
     }
     if (flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT) {
-      out << "[ PERFORM ] ";
+      out << "PERFORMANCE NOTE ";
     }
     if (flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT) {
-      out << "[ DEBUG ]   ";
+      out << "DEBUG ";
     }
-    out << "(" << layerPrefix << ", " << messageCode << "): " << message << std::endl;
-    printf("%s", out.str().c_str());
-    fflush(stdout);
+    out << "(Layer " << layerPrefix << ", Code " << messageCode << "): " << message << std::endl;
+    fprintf(stderr, "%s", out.str().c_str());
+    fflush(stderr);
 
     return (VkBool32) false;
   }
@@ -517,7 +517,11 @@ namespace vkh {
 
       if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
         desiredPresentMode = availablePresentMode;
+        printf("Using mailbox present mode (triple buffering).\n");
       }
+    }
+    if (desiredPresentMode == VK_PRESENT_MODE_FIFO_KHR) {
+      printf("Using FIFO present mode (double buffering).\n");
     }
 
     //update physdevice for new surface size

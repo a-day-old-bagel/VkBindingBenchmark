@@ -123,9 +123,7 @@ namespace vkh
 
 		VkAttachmentReference depthRef = { 0 };
 
-		if (depthAttachment)
-		{
-			VkAttachmentReference depthRef = { 0 };
+		if (depthAttachment) {
 			depthRef.attachment = attachIdx;
 			depthRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
