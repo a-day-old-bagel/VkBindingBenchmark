@@ -110,8 +110,8 @@ int main(int argc, char **argv) {
 
 //load a test obj mesh
 #if BISTRO_TEST
-  state.testMesh = loadMesh("./meshes/exterior.obj", false, state.appContext);
-  auto interior = loadMesh("./meshes/interior.obj", false, state.appContext);
+  state.testMesh = loadMesh("./meshes/exterior.obj", false, state.context);
+  auto interior = loadMesh("./meshes/interior.obj", false, state.context);
   state.testMesh.insert(state.testMesh.end(), interior.begin(), interior.end());
 #else
   state.testMesh = loadMesh("./meshes/sponza.obj", false, state.context);
@@ -169,7 +169,7 @@ void mainLoop(VkbbState &state) {
 void cleanupSwapChain(VkbbState &state) {
   vkDestroyImageView(state.context.device, state.context.renderData.depthBuffer.view, nullptr);
   vkDestroyImage(state.context.device, state.context.renderData.depthBuffer.handle, nullptr);
-  vkFreeMemory(state.context.device, state.context.renderData.depthBuffer.imageMemory.handle, nullptr);
+  vkh::allocators::pool::free(state.context.renderData.depthBuffer.imageMemory);
 
   for (size_t i = 0; i < state.context.renderData.frameBuffers.size(); i++) {
     vkDestroyFramebuffer(state.context.device, state.context.renderData.frameBuffers[i], nullptr);

@@ -1,5 +1,7 @@
 
-# Build the external libs that need building
+# Find the libraries that should be installed on the user's system
+# In Windows, this will require downloading the SDL2 Development Libraries and installing the Vulkan SDK,
+# and making sure your environment variables are set up to point to them correctly
 
 # SDL2
 find_package( SDL2 REQUIRED )
@@ -22,6 +24,7 @@ if ( X11_XCB_FOUND )
   )
 endif ()
 
+# Assimp
 option( BUILD_SHARED_LIBS "Build package with shared libraries." OFF )
 option( BUILD_FRAMEWORK "Build package as Mac OS X Framework bundle." OFF )
 option( ASSIMP_DOUBLE_PRECISION "Set to ON to enable double precision processing" OFF )
@@ -61,10 +64,9 @@ add_subdirectory( ./glslang )
 # REALTIMEUTILS
 add_subdirectory( ./realtimeutils )
 
-# Build the external dependencies together into a linkable interface
-
+# Assemble the external dependencies together into a linkable interface that also automatically includes all
+# the necessary directories
 add_library( vkbb_external INTERFACE )
-
 target_include_directories( vkbb_external INTERFACE SYSTEM
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/assimp/include
@@ -74,7 +76,6 @@ target_include_directories( vkbb_external INTERFACE SYSTEM
   ${CMAKE_CURRENT_SOURCE_DIR}/glm
   ${vkbb_external_includes}
 )
-
 target_link_libraries( vkbb_external INTERFACE
   ${SDL2_LIBRARY}
   ${Vulkan_LIBRARY}
@@ -83,5 +84,3 @@ target_link_libraries( vkbb_external INTERFACE
   spirv-cross-glsl
   realtimeutils
 )
-
-message( STATUS "SDL2 INCLUDE DIR: ${SDL2_INCLUDE_DIR}" )

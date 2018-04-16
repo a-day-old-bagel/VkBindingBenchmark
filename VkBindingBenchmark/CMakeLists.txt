@@ -25,6 +25,7 @@ add_executable( vkbb_binding_benchmark
   os_sdl2.h )
 target_link_libraries( vkbb_binding_benchmark
   vkbb_external
+  ${vkbb_extra_linker_flags}
 )
 add_dependencies( vkbb_binding_benchmark
   vkbb_run_shaderPipeline

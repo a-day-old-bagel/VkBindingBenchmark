@@ -1,11 +1,4 @@
 
-if ( MSVC )
-  # No flags to add to MSVC at this time
-else ( MSVC )
-  # This is so that <experimental/filesystem> will link in linux.
-  set( vkbb_shader_pipeline_extra_linker_flags stdc++fs )
-endif ( MSVC )
-
 # These paths are used when compiling the shaders to SPIR-V and generating reflection files.
 # Use -D options when building with CMake to specify non-default values, or use the GUI.
 set( vkbb_glsl_dir "${CMAKE_SOURCE_DIR}/data/shader" CACHE STRING "Where the GLSL shaders are stored" )
@@ -71,7 +64,7 @@ add_executable( vkbb_shader_pipeline
 )
 target_link_libraries( vkbb_shader_pipeline
   vkbb_external
-  ${vkbb_shader_pipeline_extra_linker_flags}
+  ${vkbb_extra_linker_flags}
 )
 add_dependencies( vkbb_shader_pipeline
   vkbb_gpuInfo_conf

@@ -162,8 +162,10 @@ void createDepthBuffer(vkh::VkhContext &ctxt) {
   createInfo.usage = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 
   vkh::allocateDeviceMemory(ctxt.renderData.depthBuffer.imageMemory, createInfo, ctxt);
+
   vkBindImageMemory(ctxt.device, ctxt.renderData.depthBuffer.handle, ctxt.renderData.depthBuffer.imageMemory.handle,
                     ctxt.renderData.depthBuffer.imageMemory.offset);
+
   vkh::createImageView(ctxt.renderData.depthBuffer.view, VK_FORMAT_D32_SFLOAT, VK_IMAGE_ASPECT_DEPTH_BIT, 1,
                        ctxt.renderData.depthBuffer.handle, ctxt.device);
 
