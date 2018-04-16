@@ -118,9 +118,7 @@ int main(int argc, char **argv) {
 #endif
 
   state.uboIdx.resize(state.testMesh.size());
-
   printf("Num meshes: %lu\n", state.testMesh.size());
-
   data_store::init(state.context);
 
   for (uint32_t i = 0; i < state.testMesh.size(); ++i) {
@@ -130,20 +128,14 @@ int main(int argc, char **argv) {
 
 #if SHUFFLE_MESHES
   srand(8675309);
-
   for (uint32_t i = 0; i < state.testMesh.size(); ++i) {
-    uint32_t newSlot = rand() % (state.testMesh.size()); // warning: uint64_t, uint32_t mismatch
-
+    uint32_t newSlot = rand() % ((uint32_t)state.testMesh.size());
     std::swap(state.testMesh[i], state.testMesh[newSlot]);
     std::swap(state.uboIdx[i], state.uboIdx[newSlot]);
-//	printf("%i\n", uboIdx[i] >> 3);
-
   }
-
 #endif
 
   initRendering(state.context, state.testMesh.size());
-
   mainLoop(state);
 
   return 0;
@@ -191,6 +183,8 @@ void cleanupSwapChain(VkbbState &state) {
 }
 
 void recreateSwapChain(VkbbState &state) {
+  printf("Recreating swap chain and reinitializing rendering routines.\n");
+
   int width, height;
   SDL_GetWindowSize(state.context.window, &width, &height);
   if (width <= 0 || height <= 0) {
@@ -207,35 +201,3 @@ void recreateSwapChain(VkbbState &state) {
   createSwapchainForSurface(state.context);
   initRendering(state.context, state.testMesh.size());
 }
-
-//  void cleanup(VkbbState &state) {
-//    cleanupSwapChain(state);
-//
-//    vkDestroySampler(device, textureSampler, nullptr);
-//    vkDestroyImageView(device, textureImageView, nullptr);
-//
-//    vkDestroyImage(device, textureImage, nullptr);
-//    vkFreeMemory(device, textureImageMemory, nullptr);
-//
-//    vkDestroyDescriptorPool(device, descriptorPool, nullptr);
-//
-//    vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
-//    vkDestroyBuffer(device, uniformBuffer, nullptr);
-//    vkFreeMemory(device, uniformBufferMemory, nullptr);
-//
-//    vkDestroyBuffer(device, indexBuffer, nullptr);
-//    vkFreeMemory(device, indexBufferMemory, nullptr);
-//
-//    vkDestroyBuffer(device, vertexBuffer, nullptr);
-//    vkFreeMemory(device, vertexBufferMemory, nullptr);
-//
-//    vkDestroySemaphore(device, renderFinishedSemaphore, nullptr);
-//    vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
-//
-//    vkDestroyCommandPool(device, commandPool, nullptr);
-//
-//    vkDestroyDevice(device, nullptr);
-//    DestroyDebugReportCallbackEXT(instance, callback, nullptr);
-//    vkDestroySurfaceKHR(instance, surface, nullptr);
-//    vkDestroyInstance(instance, nullptr);
-//  }
