@@ -15,4 +15,8 @@ If you're running Windows, make sure you set up your environment variables such 
 In addition, you will need to download and install a Vulkan SDK, for example, the LunarG Vulkan SDK: https://vulkan.lunarg.com/
 In the case of the LunarG Vulkan SDK, you will run an installer that should set up the environment variables for you.
 
-In case you were wondering, a CMake-based project like this can still be used in Visual Studio, at least if you're running the 2017 version. Just use File > Open > Folder on the root directory of the project and VS2017 should detect and run the CMakeLists.txt file.
+Also, git submodules are now used for a few of the external dependencies, so when you clone, either use "git clone --recursive" or run "git submodule init" followed by "git submodule update" after cloning.
+
+Significant changes ended up being made in the top-level organization of the code, despite the intention of performing a simple port to CMake. Some new data structures were introduced, and dependencies between files and structures got a little bit more complex, unfortunately. Some of this was a result of the move to SDL2, and some of it had to do with more trivial concerns, such as handling window resizes, which need to be handled if you want to, say, run the benchmark in a tiling window manager.
+
+In case this helps anyone, a CMake-based project like this can still be opened in Visual Studio 2017, without even having to generate a VS solution or anything. Just use File > Open > Folder on the root directory of the project and VS2017 should detect and run the CMakeLists.txt file.

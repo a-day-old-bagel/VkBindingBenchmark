@@ -9,19 +9,19 @@
 #define PUSH_TEST 0
 
 //What mesh to test
-#define BISTRO_TEST 0
-#define SPONZA_TEST 1
+#define BISTRO_TEST 1
+#define SPONZA_TEST 0
 
 //Test Modifiers
-#define DYNAMIC_UBO 1
-#define DEVICE_LOCAL 1
+#define DYNAMIC_UBO 0
+#define DEVICE_LOCAL 0
 #define WITH_VK_TIMESTAMP 0
-#define PERSISTENT_STAGING_BUFFER 1
-#define COPY_ON_MAIN_COMMANDBUFFER 1
+#define PERSISTENT_STAGING_BUFFER 0
+#define COPY_ON_MAIN_COMMANDBUFFER 0
 #define COMBINE_MESHES 0
 #define SHUFFLE_MESHES 1
 
-#define WITH_COMPLEX_SHADER 0
+#define WITH_COMPLEX_SHADER 1
 
 #if UBO_TEST
 	#define data_store ubo_store

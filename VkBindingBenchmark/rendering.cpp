@@ -232,7 +232,6 @@ void render(vkh::VkhContext &ctxt, Camera::Cam &cam, const std::vector<vkh::Mesh
                               ctxt.imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
   if (res == VK_ERROR_OUT_OF_DATE_KHR) {
-//    checkf(false, "window resize not yet supported.\n");
     ctxt.resizeDlgt();
   } else {
     checkf(res == VK_SUCCESS || res == VK_SUBOPTIMAL_KHR, "failed to acquire swap chain image!");
@@ -393,7 +392,6 @@ void render(vkh::VkhContext &ctxt, Camera::Cam &cam, const std::vector<vkh::Mesh
 #endif
 
   if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR) {
-//    checkf(false, "window resize not yet supported.\n");
     ctxt.resizeDlgt();
   } else {
     checkf(res == VK_SUCCESS , "failed to present swap chain image!");

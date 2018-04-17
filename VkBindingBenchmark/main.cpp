@@ -21,12 +21,11 @@ class VkbbState;
 void logFPSAverage(double avg);
 void mainLoop(VkbbState &state);
 void cleanupSwapChain(VkbbState &state);
-void cleanup(VkbbState &state);
 void recreateSwapChain(VkbbState &state);
 
 class VkbbState {
 
-    std::unique_ptr<rtu::topics::Subscription> quitSub, mouseMove, keyW, keyA, keyS, keyD;
+    std::unique_ptr<rtu::topics::Subscription> quit, mouseMove, keyW, keyA, keyS, keyD;
     float cameraSpeed = 2.f;
     float mouseSpeed = 0.005f;
 
@@ -45,7 +44,7 @@ class VkbbState {
       context.windowHeight = SCREEN_H;
       context.resizeDlgt = RTU_MTHD_DLGT(&VkbbState::onWindowResize, this);
 
-      quitSub = std::make_unique<rtu::topics::Subscription>("quit", RTU_MTHD_DLGT(&VkbbState::onQuit, this));
+      quit = std::make_unique<rtu::topics::Subscription>("quit", RTU_MTHD_DLGT(&VkbbState::onQuit, this));
       mouseMove = std::make_unique<rtu::topics::Subscription>("mouse_moved", RTU_MTHD_DLGT(&VkbbState::onMouse, this));
       keyW = std::make_unique<rtu::topics::Subscription>("key_held_w", RTU_MTHD_DLGT(&VkbbState::onKeyW, this));
       keyA = std::make_unique<rtu::topics::Subscription>("key_held_a", RTU_MTHD_DLGT(&VkbbState::onKeyA, this));
