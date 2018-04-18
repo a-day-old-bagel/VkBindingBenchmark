@@ -35,7 +35,7 @@ file( GLOB_RECURSE vkbb_glsl_sources
   "${vkbb_glsl_dir}/*.comp"
 )
 
-message( STATUS "Compiling GLSL in ${vkbb_glsl_dir} to SPV in ${vkbb_spv_dir}" )
+message( STATUS "Will compile GLSL in ${vkbb_glsl_dir} to SPV in ${vkbb_spv_dir}" )
 
 # Compile each GLSL source to SPV
 foreach ( glsl_source ${vkbb_glsl_sources} )
@@ -81,7 +81,7 @@ foreach ( glsl_source ${vkbb_glsl_sources} )
   list( APPEND vkbb_refl_files ${refl_output} )
 endforeach ( glsl_source )
 
-message( STATUS "Compiling SPV in ${vkbb_spv_dir} to REFL in ${vkbb_refl_dir}" )
+message( STATUS "Will compile SPV in ${vkbb_spv_dir} to REFL in ${vkbb_refl_dir}" )
 
 # Run the ShaderPipeline executable, if there's anything to do.
 if ( vkbb_refl_files )
