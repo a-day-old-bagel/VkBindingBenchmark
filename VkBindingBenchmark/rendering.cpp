@@ -4,34 +4,12 @@
 #include "config.h"
 #include "rendering.h"
 #include "vkh_material.h"
-#include <glm/gtx/transform.hpp>
-#include <glm/glm.hpp>
 #include "shader_inputs.h"
 #include "vkh_types.h"
+#include "realtimeutils/topics.hpp"
 
-//struct RenderingData
-//{
-//	vkh::VkhContext*				owningContext;
-//	std::vector<VkFramebuffer>		frameBuffers;
-//	std::vector<VkCommandBuffer>	commandBuffers;
-//	vkh::VkhRenderBuffer			depthBuffer;
-//	VkRenderPass					mainRenderPass;
-//
-//	VkBuffer						ubo;
-//	vkh::Allocation					uboAlloc;
-//};
-//
-//RenderingData appData;
-//
-//struct MatData
-//{
-//	std::vector<VkDescriptorSet>	descSets;
-//	VkDescriptorSetLayout			descSetLayout;
-//	VkPipelineLayout				pipelineLayout;
-//	VkPipeline						graphicsPipeline;
-//};
-//
-//MatData appMaterial;
+#include <glm/gtx/transform.hpp>
+#include <glm/glm.hpp>
 
 void createMainRenderPass(vkh::VkhContext &ctxt);
 
@@ -40,8 +18,6 @@ void createDepthBuffer(vkh::VkhContext &ctxt);
 void loadDebugMaterial(vkh::VkhContext &ctxt);
 
 void loadUBOTestMaterial(vkh::VkhContext &ctxt, int num);
-
-void createGlobalShaderData();
 
 int bindDescriptorSets(vkh::VkhContext &ctxt, int curPage, int pageToBind, int slotToBind, VkCommandBuffer &cmd);
 
@@ -64,10 +40,6 @@ void initRendering(vkh::VkhContext &ctxt, uint32_t num) {
 #else
   loadUBOTestMaterial(ctxt, num);
 #endif
-}
-
-void createGlobalShaderData() {
-
 }
 
 void loadUBOTestMaterial(vkh::VkhContext &ctxt, int num) {
@@ -207,7 +179,7 @@ void render(vkh::VkhContext &ctxt, Camera::Cam &cam, const std::vector<vkh::Mesh
             const std::vector<uint32_t> &uboIdx) {
   const glm::mat4 view = Camera::viewMatrix(cam);
 
-  glm::mat4 p = glm::perspectiveRH(glm::radians(60.0f), ctxt.windowWidth / (float) ctxt.windowHeight, 0.05f, 3000.0f);
+  glm::mat4 p = glm::perspectiveRH(glm::radians(60.0f), ctxt.windowWidth / (float) ctxt.windowHeight, 0.1f, 10000.0f);
   //from https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
   //this flips the y coordinate back to positive == up, and readjusts depth range to match opengl
   glm::mat4 vulkanCorrection = glm::mat4(
@@ -232,12 +204,14 @@ void render(vkh::VkhContext &ctxt, Camera::Cam &cam, const std::vector<vkh::Mesh
                               ctxt.imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
   if (res == VK_ERROR_OUT_OF_DATE_KHR) {
-    ctxt.resizeDlgt();
+    rtu::topics::publish("window_resized");
+    return;
   } else {
     checkf(res == VK_SUCCESS || res == VK_SUBOPTIMAL_KHR, "failed to acquire swap chain image!");
   }
 
-  vkh::waitForFence(ctxt.frameFences[imageIndex], ctxt.device);
+//  vkh::waitForFence(ctxt.frameFences[imageIndex], ctxt.device);
+  vkWaitForFences(ctxt.device, 1, &ctxt.frameFences[imageIndex], VK_FALSE, 5000000000);
   vkResetFences(ctxt.device, 1, &ctxt.frameFences[imageIndex]);
 
   //record drawing
@@ -392,7 +366,7 @@ void render(vkh::VkhContext &ctxt, Camera::Cam &cam, const std::vector<vkh::Mesh
 #endif
 
   if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR) {
-    ctxt.resizeDlgt();
+    rtu::topics::publish("window_resized");
   } else {
     checkf(res == VK_SUCCESS , "failed to present swap chain image!");
   }

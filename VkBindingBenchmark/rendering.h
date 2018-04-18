@@ -12,6 +12,8 @@ struct DrawCall {
 
 void initRendering(vkh::VkhContext &, uint32_t num);
 
+//void cleanupRendering(vkh::VkhContext &);
+
 void updateUBOs(vkh::VkhContext &, Camera::Cam &cam);
 
 void render(vkh::VkhContext &, Camera::Cam &camera, const std::vector<vkh::MeshAsset> &drawCalls,

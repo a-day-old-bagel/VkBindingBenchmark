@@ -9,6 +9,8 @@
 #include "debug.h"
 #include "config.h"
 
+#define VK_USE_PLATFORM_XCB_KHR
+
 namespace sdl {
 
   struct WindowCreateInfo {
@@ -110,7 +112,12 @@ namespace sdl {
             rtu::topics::publish<SDL_Event>("mouse_moved", event);
           } break;
         case SDL_WINDOWEVENT:
-//          graphicsBackend::handleWindowEvent((void*)&event); break;
+          switch (event.window.event) {
+            case SDL_WINDOWEVENT_SIZE_CHANGED: {
+              rtu::topics::publish("window_resized");
+            }
+            default: break;
+          }
         default: break;
       }
     }

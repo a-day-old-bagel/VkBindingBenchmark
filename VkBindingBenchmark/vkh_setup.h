@@ -138,19 +138,18 @@ namespace vkh {
     extensionsPresent.push_back(false);
 #endif
 
-
     printf("Available Vulkan extensions (*) and enabled extensions (=>): \n");
 
     for (uint32_t i = 0; i < extensions.size(); ++i) {
       auto &prop = extensions[i];
-      bool found = false;
+      bool inUse = false;
       for (uint32_t i = 0; i < requiredExtensions.size(); i++) {
         if (strcmp(prop.extensionName, requiredExtensions[i]) == 0) {
-          found = true;
+          inUse = true;
           extensionsPresent[i] = true;
         }
       }
-      printf("\t%s %s\n", found ? "=>" : "* ", prop.extensionName);
+      printf("\t%s %s\n", inUse ? "=>" : "* ", prop.extensionName);
     }
 
     bool allExtensionsFound = true;
@@ -188,6 +187,7 @@ namespace vkh {
   }
 
   void createSurface(VkhContext &ctxt) {
+//    bool success = SDL_Vulkan_CreateSurface(ctxt.window, ctxt.instance, &ctxt.surface.surface);
     bool success = SDL_Vulkan_CreateSurface(ctxt.window, ctxt.instance, &ctxt.surface.surface);
     checkf(success, "SDL_Vulkan_CreateSurface(): %s\n", SDL_GetError());
     if (!success) {
@@ -406,7 +406,7 @@ namespace vkh {
 
     }
 
-    //we don't need anything fancy right now, but this is where you require things
+    // we don't need anything fancy right now, but this is where you require things
     // like geo shader support
 
     std::vector<const char *> deviceExtensions;
@@ -514,7 +514,6 @@ namespace vkh {
     desiredPresentMode = VK_PRESENT_MODE_FIFO_KHR;
     for (uint32_t i = 0; i < physDevice.swapChainSupport.presentModes.size(); ++i) {
       const auto &availablePresentMode = physDevice.swapChainSupport.presentModes[i];
-
       if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
         desiredPresentMode = availablePresentMode;
         printf("Using mailbox present mode (triple buffering).\n");
@@ -603,12 +602,23 @@ namespace vkh {
 
   }
 
+  void getWindowSize(VkhContext &ctxt) {
+    int width, height;
+    SDL_GetWindowSize(ctxt.window, &width, &height);
+    if (width <= 0 || height <= 0) {
+      return;
+    }
+    printf("Window size is %ux%u.\n", width, height);
+    ctxt.windowWidth = width;
+    ctxt.windowHeight = height;
+  }
+
   void initContext(VkhContextCreateInfo &info, const char *appName, VkhContext &ctxt) {
     sdl::WindowCreateInfo sdlWindowCreateInfo;
     sdlWindowCreateInfo.width = ctxt.windowWidth;
     sdlWindowCreateInfo.height = ctxt.windowHeight;
     ctxt.window = sdl::init(sdlWindowCreateInfo);
-    SDL_GetWindowSize(ctxt.window, &ctxt.windowWidth, &ctxt.windowHeight);
+    getWindowSize(ctxt); // in case we got the window size we deserve
 
     createInstance(ctxt, appName);
     createDebugCallback(ctxt);
@@ -619,7 +629,8 @@ namespace vkh {
 
     vkh::allocators::pool::activate(&ctxt);
 
-    createSwapchainForSurface(ctxt);
+    createSwapchainForSurface(ctxt); // window size is needed here
+
     createCommandPool(ctxt.gfxCommandPool, ctxt.device, ctxt.gpu, ctxt.gpu.graphicsQueueFamilyIdx);
     createCommandPool(ctxt.transferCommandPool, ctxt.device, ctxt.gpu, ctxt.gpu.transferQueueFamilyIdx);
     createCommandPool(ctxt.presentCommandPool, ctxt.device, ctxt.gpu, ctxt.gpu.presentQueueFamilyIdx);

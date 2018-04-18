@@ -1,5 +1,6 @@
 #pragma once
-#include <stdint.h>
+
+#include <cstdint>
 #include <cstdlib>
 #include "vkh.h"
 #include "vkh_types.h"

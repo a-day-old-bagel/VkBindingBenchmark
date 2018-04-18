@@ -9,8 +9,8 @@
 #define PUSH_TEST 0
 
 //What mesh to test
-#define BISTRO_TEST 1
-#define SPONZA_TEST 0
+#define BISTRO_TEST 0
+#define SPONZA_TEST 1
 
 //Test Modifiers
 #define DYNAMIC_UBO 0
@@ -21,7 +21,7 @@
 #define COMBINE_MESHES 0
 #define SHUFFLE_MESHES 1
 
-#define WITH_COMPLEX_SHADER 1
+#define WITH_COMPLEX_SHADER 0
 
 #if UBO_TEST
 	#define data_store ubo_store

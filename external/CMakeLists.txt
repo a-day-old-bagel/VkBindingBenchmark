@@ -18,6 +18,7 @@ list( APPEND vkbb_external_includes
 # XCB (if present)
 find_package( X11_XCB )
 if ( X11_XCB_FOUND )
+  add_definitions( -DHAVE_X11_XCB )
   set( XCB_LIBS ${X11_XCB_LIBRARIES} )
   list( APPEND vkbb_external_includes
     ${X11_XCB_INCLUDE_DIRS}

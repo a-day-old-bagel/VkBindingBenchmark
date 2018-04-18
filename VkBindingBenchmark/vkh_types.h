@@ -4,7 +4,6 @@
 #include <vulkan/vulkan.h>
 #include <vulkan/vk_sdk_platform.h>
 #include <vector>
-#include "delegate.hpp"
 
 namespace vkh {
   struct VkhContext;
@@ -110,9 +109,8 @@ namespace vkh {
 
   struct VkhContext {
       SDL_Window *window;
-      int windowWidth = SDL_WINDOWPOS_UNDEFINED;
-      int windowHeight = SDL_WINDOWPOS_UNDEFINED;
-      rtu::Delegate<void()> resizeDlgt;
+      int windowWidth;
+      int windowHeight;
 
       VkInstance instance;
       VkhSurface surface;
