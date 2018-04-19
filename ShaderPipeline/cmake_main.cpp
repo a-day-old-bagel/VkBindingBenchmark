@@ -3,11 +3,12 @@
 #include <string>
 #include <vector>
 #include <cstdint>
-#include "filesystem_utils.h"
-#include "string_utils.h"
-#include "shaderdata.h"
 #include <cstdio>
 #include <codecvt>
+#include <experimental/filesystem>
+#include "shaderdata.h"
+
+namespace fs = std::experimental::filesystem;
 
 std::string baseTypeToString(spirv_cross::SPIRType::BaseType type);
 
@@ -95,9 +96,11 @@ int main(int argc, const char** argv) {
 
   printf("Compiling reflections: \n\tSPV dir is %s, \n\tREFL dir is %s\n", shaderInPath.c_str(), reflOutPath.c_str());
 
-  makeDirectoryRecursive(makeFullPath(reflOutPath));
-
-  std::vector<std::string> inputFiles = getFilesInDirectory(shaderInPath);
+  fs::create_directories(reflOutPath);
+  std::vector<std::string> inputFiles;
+  for (auto & p : fs::directory_iterator(shaderInPath)) {
+    inputFiles.push_back(p.path().string());
+  }
 
 	// generate reflection files for all built shaders
 	{
@@ -108,9 +111,9 @@ int main(int argc, const char** argv) {
 
 			ShaderData data = {};
 
-      std::string spvPath = makeFullPath(inputFiles[i]);
+      std::string spvPath = fs::absolute(inputFiles[i]).string();
       std::string reflPath = spvPath;
-      findReplace(reflPath, std::string(".spv"), std::string(".refl"));
+			reflPath.replace(reflPath.find(".spv"),std::string(".spv").length(),".refl");
 
       printf("\tReflecting spv: %s\n", spvPath.c_str());
       fflush(stdout);

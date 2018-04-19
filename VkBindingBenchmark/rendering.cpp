@@ -210,7 +210,6 @@ void render(vkh::VkhContext &ctxt, Camera::Cam &cam, const std::vector<vkh::Mesh
     checkf(res == VK_SUCCESS || res == VK_SUBOPTIMAL_KHR, "failed to acquire swap chain image!");
   }
 
-//  vkh::waitForFence(ctxt.frameFences[imageIndex], ctxt.device);
   vkWaitForFences(ctxt.device, 1, &ctxt.frameFences[imageIndex], VK_FALSE, 5000000000);
   vkResetFences(ctxt.device, 1, &ctxt.frameFences[imageIndex]);
 

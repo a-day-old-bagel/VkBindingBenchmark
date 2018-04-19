@@ -72,17 +72,6 @@ namespace vkh
 		checkf(vk_res == VK_SUCCESS, "Error creating vk fence");
 	}
 
-	void waitForFence(VkFence& fence, const VkDevice& device)
-	{
-		if (fence)
-		{
-			if (vkGetFenceStatus(device, fence) == VK_SUCCESS)
-			{
-				vkWaitForFences(device, 1, &fence, true, 0);
-			}
-		}
-	}
-
 	void createCommandPool(VkCommandPool& outPool, const VkDevice& lDevice, const VkhPhysicalDevice& physDevice, uint32_t queueFamilyIdx)
 	{
 		VkCommandPoolCreateInfo poolInfo = {};

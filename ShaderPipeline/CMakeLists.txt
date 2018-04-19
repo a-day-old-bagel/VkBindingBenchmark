@@ -58,9 +58,7 @@ add_custom_target(
 # compile the stuff in ShaderPipeline
 add_executable( vkbb_shader_pipeline
   cmake_main.cpp
-  filesystem_utils.h
   shaderdata.h
-  string_utils.h
 )
 target_link_libraries( vkbb_shader_pipeline
   vkbb_external

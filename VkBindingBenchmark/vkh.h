@@ -14,7 +14,6 @@ namespace vkh {
                        const VkImage &imageHdl, const VkDevice &device);
   void createVkSemaphore(VkSemaphore &outSemaphore, const VkDevice &device);
   void createFence(VkFence &outFence, VkDevice &device);
-  void waitForFence(VkFence &fence, const VkDevice &device);
   void createCommandPool(VkCommandPool &outPool, const VkDevice &lDevice, const VkhPhysicalDevice &physDevice,
                          uint32_t queueFamilyIdx);
   void freeDeviceMemory(Allocation &mem);
